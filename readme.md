@@ -11,9 +11,12 @@ I created this mainly to be compatible with [okhttp](https://square.github.io/ok
 
 *Warning you should ensure you run this on a trusted network*
 
-Download the jar [here](https://github.com/scottyab/ssl-pin-generator/releases/download/v0.1/generatePins.jar) or clone and compile the class
+Download the jar [here](https://github.com/scottyab/ssl-pin-generator/releases/download/v0.1/generatePins.jar) or clone and compile the class. 
 
-`$ java -jar generatePins.jar publicobject.com`
+Simply pass to hostname and optionally port to the jar. `$ java -jar generatePins.jar <your hostname:port">`
+
+
+i.e `$ java -jar generatePins.jar publicobject.com`
 
 Output:
 
@@ -25,7 +28,7 @@ sha1/blhOM3W9V/bVQhsWAcLYwPU6n24=
 sha1/T5x9IXmcrQ7YuQxXnxoCmeeQ84c=
 ```
 
-If using okhttp copy you use them with the `com.squareup.okhttp.CertificatePinner`
+Then if you are using okhttp add them to the `com.squareup.okhttp.CertificatePinner` like this (from the [okhttp java docs](https://github.com/square/okhttp/blob/92bf318a70a9e2194e626ff2c2f4266b0bbb09e5/okhttp/src/main/java/com/squareup/okhttp/CertificatePinner.java#L160))
 
 ```java
 CertificatePinner certificatePinner = new CertificatePinner.Builder()
