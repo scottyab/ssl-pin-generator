@@ -11,7 +11,7 @@ I created this mainly to be compatible with [okhttp](https://square.github.io/ok
 
 *Warning you should ensure you run this on a trusted network*
 
-Download the jar or clone and compile the class
+Download the jar [here](https://github.com/scottyab/ssl-pin-generator/releases/download/v0.1/generatePins.jar) or clone and compile the class
 
 `$ java -jar generatePins.jar publicobject.com`
 
