@@ -42,7 +42,7 @@ CertificatePinner certificatePinner = new CertificatePinner.Builder()
 
 I wrote about SSL pinning and several other interesting things you can do to make your apps more secure in the [Android Security Cookbook](http://www.amazon.co.uk/Android-Security-Cookbook-Keith-Makan/dp/1782167161)
 
-##licence 
+##License 
 The MIT License
 
 Copyright (c) 2014 Scott Alexander-Bown http://scottyab.com
