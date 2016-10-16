@@ -28,56 +28,80 @@ import sun.misc.BASE64Encoder;
  *
  */
 public class SSLPinGenerator {
-	private static final String HASH_ALGORTHM = "SHA-1";
+
+	private static final String DEFAULT_HASH_ALGORTHM = "SHA-1";
+	private String hashAlgorthm = DEFAULT_HASH_ALGORTHM;
 	private MessageDigest digest;
 	private String hostname;
 	private int hostPort;
 	
-	private static final boolean DEBUG = false;
+	private boolean debugPrinting = false;
 	
-	public SSLPinGenerator(String host, int port) throws Exception {
-		digest = MessageDigest.getInstance(HASH_ALGORTHM);
-		hostname=host;
-		hostPort=port;
+	public SSLPinGenerator(String host, int port, String hashAlg,  boolean argDebug) throws Exception {
+		this.hashAlgorthm=hashAlg;
+		this.hostname=host;
+		this.hostPort=port;
+		this.debugPrinting = argDebug;
+
+		digest = MessageDigest.getInstance(hashAlg);
+
 	}
 
 	/**
 	 * 
-	 * @param args hostname (i.e android.com) and optionally port in form hostname:port or hostname port
+	 * @param args hostname (i.e android.com) and optionally port in form hostname:port, hash alg
 	 */
 	public static void main(String[] args) {
-		if ((args.length == 1) || (args.length == 2)) {
-			String[] hostAndPort = args[0].split(":");
-			String host = hostAndPort[0];
-			
-			// if port blank assume 443
-			int port = (hostAndPort.length == 1) ? 443 : Integer
-					.parseInt(hostAndPort[1]);
-			
-			if ("help".equalsIgnoreCase(host)){
+		try{
+			if (args.length >= 1) {
+
+				if ("help".equalsIgnoreCase(args[0])){
+					printHelp();
+					return;
+				}
+
+				String[] argHostAndPort = args[0].split(":");
+				String argHost = argHostAndPort[0];
+
+				// if port blank assume 443
+				int argPort = (argHostAndPort.length == 1) ? 443 : Integer
+						.parseInt(argHostAndPort[1]);
+
+				String argAlg;
+				if(args.length>=2) {
+					argAlg = args[1];
+				}else{
+					argAlg = DEFAULT_HASH_ALGORTHM;
+				}
+
+				boolean argDebug = false;
+				if(args.length>=3 && ("debug".equalsIgnoreCase(args[2]))) {
+					argDebug = true;
+				}
+
+				try {
+					SSLPinGenerator calc = new SSLPinGenerator(argHost, argPort, argAlg, argDebug);
+					calc.fetchAndPrintPinHashs();
+				} catch (Exception e) {
+					printHelp();
+					System.out.println("\nWhoops something went wrong: " +e.getMessage());
+					e.printStackTrace();
+
+				}
+			} else {
 				printHelp();
 				return;
 			}
-			
-			try {
-				SSLPinGenerator calc = new SSLPinGenerator(host, port);
-				calc.fetchAndPrintPinHashs();
-			} catch (Exception e) {
-				printHelp();
-				System.out.println("\nWhoops something went wrong: " +e.getMessage());
-				e.printStackTrace();
-				
-			}
-		} else {
+		}catch (Exception e){
+			System.out.println("CLI Error: " + e.getMessage());
 			printHelp();
-			return;
 		}
 	}
 
 	private static void printHelp(){
-		System.out.println("##SSL pins generator##");
-	    System.out.println("The generated pins are base-64 SHA-1 hashes. Note: only run this on a trusted network.");
-		System.out.println("\nUsage: java -jar generatePins.jar <host>[:port]");
+		System.out.println("##SSL pin set generator##");
+	    System.out.println("The generated pinset are base-64 SHA-1(default) hashes. Note: only run this on a trusted network.");
+		System.out.println("\nUsage: \"java -jar generatePins.jar <host>[:port] hashAlgorthm\" i.e scottyab.com:443 sha-256 ");
 	}
 	
 	private void fetchAndPrintPinHashs() throws Exception {
@@ -96,6 +120,12 @@ public class SSLPinGenerator {
 	 * Calculates and prints hash of each certificate in the chain  
 	 */
 	public class PublicKeyExtractingTrustManager implements X509TrustManager {
+
+		private final BASE64Encoder base64Encoder;
+
+		public PublicKeyExtractingTrustManager() {
+			base64Encoder = new BASE64Encoder();
+		}
 
 		public X509Certificate[] getAcceptedIssuers() {
 			//do nothing this is just to extract pins
@@ -117,7 +147,7 @@ public class SSLPinGenerator {
 				byte[] pubKey = cert.getPublicKey().getEncoded();
 				
 				
-				if (DEBUG){
+				if (debugPrinting){
 					//printing the cert details can help you identify which pin belongs to which certificate in the chain
 					Principal subject = cert.getSubjectDN();
 					if (subject!=null) {
@@ -125,7 +155,7 @@ public class SSLPinGenerator {
 					}
 				}
 				final byte[] hash = digest.digest(pubKey);
-				System.out.println("sha1/"+new BASE64Encoder().encode(hash));
+				System.out.println(hashAlgorthm + "/"+base64Encoder.encode(hash));
 			}
 		}
 	}

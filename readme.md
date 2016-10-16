@@ -1,20 +1,21 @@
 SSL Pin Generator
 =================
 
-Is a simple Java base util to generate SSL pins based on a certificate's Subject Public Key Info as described on <a href="http://goo.gl/AIx3e5">Adam Langley's Weblog</a> (a.k.a Public Key pinning). Pins are base-64 SHA-1 hashes, consistent with the format Chromium uses for <a href="http://goo.gl/XDh6je">static certificates</a>. See Chromium's <a href="http://goo.gl/4CCnGs">pinsets</a> for hostnames that are pinned in that
+Is a simple Java base util to generate SSL pins based on a certificate's Subject Public Key Info as described on <a href="http://goo.gl/AIx3e5">Adam Langley's Weblog</a> (a.k.a Public Key pinning). Pins are base-64 SHA-1 [default] hashes, consistent with the format Chromium uses for <a href="http://goo.gl/XDh6je">static certificates</a>. See Chromium's <a href="http://goo.gl/4CCnGs">pinsets</a> for hostnames that are pinned in that
 browser.
  
-I created this mainly to be compatible with [okhttp](https://square.github.io/okhttp/) 2.1+
+I created this mainly to be compatible with [okhttp](https://square.github.io/okhttp/) 2.1+, but later added the option to specific which hashing algorithm can be used to make this compatible with Android's `<network-security-config>`
 
 
 ##Usage
 
 *Warning you should ensure you run this on a trusted network*
 
-Download the jar [here](https://github.com/scottyab/ssl-pin-generator/releases/download/v0.1/generatePins.jar) or clone and compile the class. 
+Download the jar [here](https://github.com/scottyab/ssl-pin-generator/releases/download/v0.2/generatePins.jar) or clone and compile the class.
 
-Simply pass to hostname and optionally port to the jar. `$ java -jar generatePins.jar <your hostname:port">`
+Simply pass to hostname with optionally port, and algorithm to the jar. `$ java -jar generatePins.jar <your hostname:port"> algorithm`
 
+###Default
 
 i.e `$ java -jar generatePins.jar publicobject.com`
 
@@ -38,6 +39,27 @@ CertificatePinner certificatePinner = new CertificatePinner.Builder()
         .add("publicobject.com", "sha1/T5x9IXmcrQ7YuQxXnxoCmeeQ84c=")
         .build();
 ```
+
+###Custom Hash,
+
+In this exmaple we use SHA-256 to be compatible with Android's `<network-security-config>`
+
+`$ java -jar generatePins.jar publicobject.com sha-256 debug`
+
+```
+Generating SSL pins for: publicobject.com
+subject :  CN=publicobject.com, OU=PositiveSSL, OU=Domain Control Validated
+sha-256/afwiKY3RxoMmLkuRW1l7QsPZTJPwDS2pdDROQjXw8ig=
+subject :  CN=COMODO RSA Domain Validation Secure Server CA, O=COMODO CA Limited, L=Salford, ST=Greater Manchester, C=GB
+sha-256/klO23nT2ehFDXCfx3eHTDRESMz3asj1muO+4aIdjiuY=
+subject :  CN=COMODO RSA Certification Authority, O=COMODO CA Limited, L=Salford, ST=Greater Manchester, C=GB
+sha-256/grX4Ta9HpZx6tSHkmCrvpApTQGo67CYDnvprLg5yRME=
+subject :  CN=AddTrust External CA Root, OU=AddTrust External TTP Network, O=AddTrust AB, C=SE
+sha-256/lCppFqbkrlJ3EcVFAkeip0+44VaoJUymbnOaEUk7tEU=
+```
+
+This also shows the debug option to print out subject name to help identifiy which pin belongs to which cert in the chain.
+
 
 ##Further reading
 
