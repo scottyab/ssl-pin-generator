@@ -100,7 +100,7 @@ public class SSLPinGenerator {
 
 	private static void printHelp(){
 		System.out.println("##SSL pin set generator##");
-	    System.out.println("The generated pinset are base-64 SHA-1(default) hashes. Note: only run this on a trusted network.");
+	    System.out.println("The generated pinset are base-64 encoded hashes (default SHA-1, but supports SHA-256). Note: only run this on a trusted network.");
 		System.out.println("\nUsage: \"java -jar generatePins.jar <host>[:port] hashAlgorthm\" i.e scottyab.com:443 sha-256 ");
 	}
 	
@@ -117,7 +117,10 @@ public class SSLPinGenerator {
 	}
 
 	/**
-	 * Calculates and prints hash of each certificate in the chain  
+	 * Calculates and prints hash of each certificate in the chain
+	 *
+	 * PLEASE DO NOT COPY THIS TrustManager IMPLEMENTATION FOR USE IN REAL WORLD. This is just to print the pins.
+	 *
 	 */
 	public class PublicKeyExtractingTrustManager implements X509TrustManager {
 
@@ -128,13 +131,13 @@ public class SSLPinGenerator {
 		}
 
 		public X509Certificate[] getAcceptedIssuers() {
-			//do nothing this is just to extract pins
+			//do nothing this is just to extract/print pins
 			return null;
 		}
 
 		public void checkClientTrusted(X509Certificate[] chain, String authType)
 				throws CertificateException {
-			//do nothing this is just to extract pins
+			//do nothing this is just to extract/print pins
 		}
 
 		/**
@@ -146,17 +149,21 @@ public class SSLPinGenerator {
 				//we use the public key as it is consistent trough certificate renewals
 				byte[] pubKey = cert.getPublicKey().getEncoded();
 				
-				
 				if (debugPrinting){
 					//printing the cert details can help you identify which pin belongs to which certificate in the chain
 					Principal subject = cert.getSubjectDN();
 					if (subject!=null) {
-						System.out.println("subject :  " + subject.getName());
+						System.out.println("Subject :  " + subject.getName());
 					}
 				}
 				final byte[] hash = digest.digest(pubKey);
-				System.out.println(hashAlgorthm + "/"+base64Encoder.encode(hash));
+				String hashAlgorthmWithoutHyphen = removeHyphen(hashAlgorthm);
+				System.out.println(String.format("%s/%s", hashAlgorthmWithoutHyphen,base64Encoder.encode(hash)));
 			}
+		}
+
+		private String removeHyphen(String hashAlgorthm) {
+			return hashAlgorthm.replace("-", "");
 		}
 	}
 

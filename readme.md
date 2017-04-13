@@ -11,13 +11,17 @@ I created this mainly to be compatible with [okhttp](https://square.github.io/ok
 
 *Warning you should ensure you run this on a trusted network*
 
-Download the jar [here](https://github.com/scottyab/ssl-pin-generator/releases/download/v0.2/generatePins.jar) or clone and compile the class.
+Either fork the project and call the `SSLPinGenerator.java` class directly or Download the latest release jar [here](https://github.com/scottyab/ssl-pin-generator/releases/).
 
 Simply pass to hostname with optionally port, and algorithm to the jar. `$ java -jar generatePins.jar <your hostname:port"> algorithm`
 
 ###Default
 
 i.e `$ java -jar generatePins.jar publicobject.com`
+
+or 
+
+`$ java -jar generatePins.jar scottyab.com sha-256`
 
 Output:
 
