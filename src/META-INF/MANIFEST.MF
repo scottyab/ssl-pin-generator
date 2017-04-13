@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: ./bcprov-ext-jdk15on-149.jar .
+Main-Class: com.scottyab.ssl.util.SSLPinGenerator
+
