@@ -7,7 +7,7 @@ browser.
 I created this mainly to be compatible with [okhttp](https://square.github.io/okhttp/) 2.1+, but later added the option to specific which hashing algorithm can be used to make this compatible with Android's `<network-security-config>`
 
 
-##Usage
+## Usage
 
 *Warning you should ensure you run this on a trusted network*
 
@@ -15,7 +15,7 @@ Either fork the project and call the `SSLPinGenerator.java` class directly or Do
 
 Simply pass to hostname with optionally port, and algorithm to the jar. `$ java -jar generatePins.jar <your hostname:port"> algorithm`
 
-###Default
+### Default
 
 i.e `$ java -jar generatePins.jar publicobject.com`
 
@@ -44,7 +44,7 @@ CertificatePinner certificatePinner = new CertificatePinner.Builder()
         .build();
 ```
 
-###Custom Hash,
+### Custom Hash,
 
 In this exmaple we use SHA-256 to be compatible with Android's `<network-security-config>`
 
@@ -65,13 +65,13 @@ sha-256/lCppFqbkrlJ3EcVFAkeip0+44VaoJUymbnOaEUk7tEU=
 This also shows the debug option to print out subject name to help identifiy which pin belongs to which cert in the chain.
 
 
-##Further reading
+## Further reading
 
 *Shameless plug alert!*
 
 I wrote about SSL pinning and several other interesting things you can do to make your apps more secure in the [Android Security Cookbook](http://www.amazon.co.uk/Android-Security-Cookbook-Keith-Makan/dp/1782167161)
 
-##License 
+## License 
 The MIT License
 
 Copyright (c) 2014 Scott Alexander-Bown http://scottyab.com
